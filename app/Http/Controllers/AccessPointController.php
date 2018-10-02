@@ -54,7 +54,7 @@ class AccessPointController extends Controller
         if (AccessPoint::create($request->all()))
             return redirect('/accesspoint')->with('success', 'Access Point created!');
         else
-            return Session::flash('error', 'Failed Access Point!');
+            return redirect()->back()->with('error', 'Access Point create failed!');
     }
 
     /**
@@ -92,9 +92,12 @@ class AccessPointController extends Controller
     {
         $ap = AccessPoint::find($id);
         $data = $request->only($ap->getFillable());
-        $ap->fill($data)->save();
+        $ap->fill($data);
 
-        return redirect('/accesspoint')->with('success', 'Access Point updated!');
+        if ($ap->save())
+            return redirect('/accesspoint')->with('success', 'Access Point updated!');
+        else
+            return redirect()->back()->with('error', 'Access Point update failed!');
     }
 
     /**
@@ -106,7 +109,7 @@ class AccessPointController extends Controller
     public function destroy($id)
     {
         $ap = AccessPoint::find($id);
-        if (!$ap->delete())
+        if ($ap->delete())
             return redirect('/accesspoint')->with('success', 'Access Point deleted!');
         else
             return redirect('/accesspoint')->with('error', 'Access Point delete failed!');

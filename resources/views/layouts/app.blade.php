@@ -220,14 +220,14 @@
                   <a class="nav-link" href="/manageableswitch">Manageable Switch</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/switch">Switch</a>
+                  <a class="nav-link" href="/unmanageableswitch">Unmanageable Switch</a>
                 </li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../../pages/forms/basic_elements.html">
-              <i class="menu-icon mdi mdi-laptop-windows"></i>
+              <i class="menu-icon mdi mdi-file-tree"></i>
               <span class="menu-title">Virtual LAN</span>
             </a>
           </li>
