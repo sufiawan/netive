@@ -7,19 +7,19 @@
             <li class="breadcrumb-item active" aria-current="page">Access Point</li>
         </ol>
     </nav> -->
-    <div class="pb-2 mb-2"><h2>Router</h2></div>
+    <div class="pb-2 mb-2"><h2>Virtual LAN</h2></div>
     <div class="card">
         <div class="card-body">
             <div class="card-title">
-                <a href="/router/create" class="btn btn-primary">Create</a>
+                <a href="/virtuallan/create" class="btn btn-primary">Create</a>
             </div>
             <div class="table-responsive">
                 <table id="tbldata" class="table table-striped table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th>Brand & Type</th>
-                            <th>Year</th>
-                            <th>IP Address</th>
+                            <th>Name</th>
+                            <th>IP Segment</th>
+                            <th>Description</th>
                             <th>Action</th>
                         </tr>
                         {{ csrf_field() }}
@@ -27,10 +27,10 @@
                     <tbody>
                         @foreach($listdata as $data)
                         <tr>
-                            <td>{{ $data->brand_type }}</td>
-                            <td>{{ $data->purchase_year }}</td>
-                            <td>{{ $data->ip_address }}</td>
-                            <td><div><a href="/router/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>
+                            <td>{{ $data->name }}</td>
+                            <td>{{ $data->ip_segment }}</td>
+                            <td>{{ $data->description }}</td>
+                            <td><div><a href="/virtuallan/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -45,7 +45,7 @@
         function confirmDelete(id) {
             bootbox.confirm("Are you sure want to delete?", function(result) {
                 if (result) {
-                    $('#delete-form').attr('action', '/router/' + id);
+                    $('#delete-form').attr('action', '/virtuallan/' + id);
                     $('#delete-form').submit();
                 }
             })

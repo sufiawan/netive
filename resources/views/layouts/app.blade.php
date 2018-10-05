@@ -226,15 +226,15 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../../pages/forms/basic_elements.html">
+            <a class="nav-link" href="/virtuallan">
               <i class="menu-icon mdi mdi-file-tree"></i>
               <span class="menu-title">Virtual LAN</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../../pages/forms/basic_elements.html">
+            <a class="nav-link" href="/enddevice">
               <i class="menu-icon mdi mdi-laptop-windows"></i>
-              <span class="menu-title">End User</span>
+              <span class="menu-title">End Device</span>
             </a>
           </li>
           <li class="nav-item">

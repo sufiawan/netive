@@ -17,6 +17,7 @@
                 <table id="tbldata" class="table table-striped table-bordered table-hover">
                     <thead>
                         <tr>
+                            <th>Name</th>
                             <th>Brand & Type</th>
                             <th>Year</th>
                             <th>IP Address</th>
@@ -27,7 +28,8 @@
                     <tbody>
                         @foreach($listdata as $data)
                         <tr>
-                            <td>{{ $data->brand }} {{ $data->type }}</td>
+                            <td>{{ $data->name }}</td>
+                            <td>{{ $data->brand_type }}</td>
                             <td>{{ $data->purchase_year }}</td>
                             <td>{{ $data->ip_address }}</td>
                             <td><div><a href="/server/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>

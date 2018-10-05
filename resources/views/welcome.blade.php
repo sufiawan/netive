@@ -8,7 +8,13 @@
         <title>Laravel</title>
 
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" type="text/css">
+        <!-- <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" type="text/css"> -->
+        <style type="text/css">
+            @font-face {
+                font-family: Nunito;
+                src: url('fonts/Nunito-Regular.tff');
+            }
+        </style>
 
         <!-- Styles -->
         <style>

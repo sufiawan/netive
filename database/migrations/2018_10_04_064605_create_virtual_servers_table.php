@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEndUsersTable extends Migration
+class CreateVirtualServersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,16 @@ class CreateEndUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('end_users', function (Blueprint $table) {
+        Schema::create('virtual_servers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->ipAddress('ip_address')->nullable();
-            $table->string('description')->nullable();
+            $table->smallInteger('cpu_core');
+            $table->integer('ram');
+            $table->char('ram_opt', 2);
+            $table->integer('hdd');
+            $table->char('hdd_opt', 2);
+            $table->string('os');
             $table->timestamps();
         });
     }
@@ -29,6 +34,6 @@ class CreateEndUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('end_users');
+        Schema::dropIfExists('virtual_servers');
     }
 }

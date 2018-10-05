@@ -3,9 +3,15 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use NetIve\EndDevice;
 
-class EndUserController extends Controller
+class EndDeviceController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +19,8 @@ class EndUserController extends Controller
      */
     public function index()
     {
-        //
+        $list = EndDevice::all();
+        return view('enddevice.index', ['listdata' => $list]);
     }
 
     /**
@@ -23,7 +30,7 @@ class EndUserController extends Controller
      */
     public function create()
     {
-        //
+        return view('enddevice.form', ['data' => new EndDevice()]);
     }
 
     /**
@@ -34,7 +41,10 @@ class EndUserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (EndDevice::create($request->all()))
+            return redirect('/enddevice')->with('success', 'EndDevice created!');
+        else
+            return redirect()->back()->with('error', 'EndDevice create failed!');
     }
 
     /**
@@ -45,7 +55,8 @@ class EndUserController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = EndDevice::find($id);
+        return view('enddevice.form', ['data' => $data]);
     }
 
     /**
@@ -56,7 +67,8 @@ class EndUserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data = EndDevice::find($id);
+        return view('enddevice.form', ['data' => $data]);
     }
 
     /**
@@ -68,7 +80,14 @@ class EndUserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = EndDevice::find($id);
+        $updateddata = $request->only($data->getFillable());
+        $data->fill($updateddata);
+
+        if ($data->save())
+            return redirect('/enddevice')->with('success', 'EndDevice updated!');
+        else
+            return redirect()->back()->with('error', 'EndDevice update failed!');
     }
 
     /**
@@ -79,6 +98,10 @@ class EndUserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = EndDevice::find($id);
+        if ($data->delete())
+            return redirect('/enddevice')->with('success', 'EndDevice deleted!');
+        else
+            return redirect('/enddevice')->with('error', 'EndDevice delete failed!');
     }
 }

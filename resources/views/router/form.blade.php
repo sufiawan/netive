@@ -12,18 +12,9 @@
             @endif
                 @csrf
                 <div class="form-row">
-                    <div class="form-group col-md-6">
-                        {{ Form::label('brand', 'Brand') }}
-                        <input id="brand" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="brand" value="{{ old('brand', $data->brand) }}" placeholder="brand" required>
-                        @if ($errors->has('string'))
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $errors->first('string') }}</strong>
-                            </span>
-                        @endif
-                    </div>
-                    <div class="form-group col-md-6">
-                        {{ Form::label('type', 'Type') }}
-                        <input id="type" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="type" value="{{ old('type', $data->type) }}" placeholder="type" required>
+                    <div class="form-group col-md-12">
+                        {{ Form::label('brand_type', 'Brand & Type') }}
+                        <input id="brand_type" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="brand_type" value="{{ old('brand_type', $data->brand_type) }}" placeholder="brand & type" required>
                         @if ($errors->has('string'))
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $errors->first('string') }}</strong>
@@ -48,7 +39,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         {{ Form::label('ip_address', 'IP Address') }}
-                        <input id="ip_address" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="ip_address" value="{{ old('ip_address', $data->ip_address) }}" placeholder="ip address">
+                        <input id="ip_address" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="ip_address" value="{{ old('ip_address', $data->ip_address) }}" placeholder="ip address" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}">
                         @if ($errors->has('ipaddress'))
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $errors->first('ipaddress') }}</strong>
@@ -83,7 +74,7 @@
                         <button type="submit" class="btn btn-primary">
                             {{ __('Submit') }}
                         </button>
-                        <a href="/data" class="btn btn-secondary">Back</a>
+                        <a href="/router" class="btn btn-secondary">Back</a>
                     </div>
                 </div>
             </form>

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRoutersTable extends Migration
+class CreateEndDevicesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreateRoutersTable extends Migration
      */
     public function up()
     {
-        Schema::create('routers', function (Blueprint $table) {
+        Schema::create('end_devices', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('brand_type', 150);
-            $table->string('bmn_number')->nullable();
-            $table->year('purchase_year');
+            $table->string('name');
             $table->ipAddress('ip_address')->nullable();
-            $table->string('device_username');
-            $table->string('device_password');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ class CreateRoutersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('routers');
+        Schema::dropIfExists('end_devices');
     }
 }

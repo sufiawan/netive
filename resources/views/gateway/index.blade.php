@@ -27,7 +27,7 @@
                     <tbody>
                         @foreach($listdata as $data)
                         <tr>
-                            <td>{{ $data->brand }} {{ $data->type }}</td>
+                            <td>{{ $data->brand_type }}</td>
                             <td>{{ $data->purchase_year }}</td>
                             <td>{{ $data->ip_address }}</td>
                             <td><div><a href="/gateway/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>

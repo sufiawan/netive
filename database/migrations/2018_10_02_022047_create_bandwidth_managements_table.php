@@ -15,8 +15,7 @@ class CreateBandwidthManagementsTable extends Migration
     {
         Schema::create('bandwidth_managements', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('brand');
-            $table->string('type');
+            $table->string('brand_type', 150);
             $table->string('bmn_number')->nullable();
             $table->year('purchase_year');
             $table->ipAddress('ip_address')->nullable();

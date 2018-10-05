@@ -29,7 +29,7 @@
                     <tbody>
                         @foreach($accesspoints as $ap)
                         <tr>
-                            <td>{{ $ap->brand }} {{ $ap->type }}</td>
+                            <td>{{ $ap->brand_type }}</td>
                             <td>{{ $ap->purchase_year }}</td>
                             <td>{{ $ap->ip_address }}</td>
                             <td>{{ $ap->wifi_ssid }}</td>

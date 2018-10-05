@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('auth/login');
+    return Redirect::to( '/home');
 });
 
 Auth::routes();
@@ -39,4 +39,4 @@ Route::resource('unmanageableswitch', 'UnmanageableSwitchController');
 
 Route::resource('virtuallan', 'VirtualLANController');
 
-Route::resource('enduser', 'EndUserController');
+Route::resource('enddevice', 'EndDeviceController');

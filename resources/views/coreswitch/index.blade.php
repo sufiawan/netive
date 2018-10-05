@@ -7,11 +7,11 @@
             <li class="breadcrumb-item active" aria-current="page">Access Point</li>
         </ol>
     </nav> -->
-    <div class="pb-2 mb-2"><h2>Router</h2></div>
+    <div class="pb-2 mb-2"><h2>Core Switch</h2></div>
     <div class="card">
         <div class="card-body">
             <div class="card-title">
-                <a href="/router/create" class="btn btn-primary">Create</a>
+                <a href="/coreswitch/create" class="btn btn-primary">Create</a>
             </div>
             <div class="table-responsive">
                 <table id="tbldata" class="table table-striped table-bordered table-hover">
@@ -30,7 +30,7 @@
                             <td>{{ $data->brand_type }}</td>
                             <td>{{ $data->purchase_year }}</td>
                             <td>{{ $data->ip_address }}</td>
-                            <td><div><a href="/router/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>
+                            <td><div><a href="/coreswitch/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -45,7 +45,7 @@
         function confirmDelete(id) {
             bootbox.confirm("Are you sure want to delete?", function(result) {
                 if (result) {
-                    $('#delete-form').attr('action', '/router/' + id);
+                    $('#delete-form').attr('action', '/coreswitch/' + id);
                     $('#delete-form').submit();
                 }
             })

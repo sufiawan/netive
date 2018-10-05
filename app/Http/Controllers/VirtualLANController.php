@@ -3,9 +3,15 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use NetIve\VirtualLAN;
 
 class VirtualLANController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +19,8 @@ class VirtualLANController extends Controller
      */
     public function index()
     {
-        //
+        $list = VirtualLAN::all();
+        return view('virtuallan.index', ['listdata' => $list]);
     }
 
     /**
@@ -23,7 +30,7 @@ class VirtualLANController extends Controller
      */
     public function create()
     {
-        //
+        return view('virtuallan.form', ['data' => new VirtualLAN()]);
     }
 
     /**
@@ -34,7 +41,10 @@ class VirtualLANController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (VirtualLAN::create($request->all()))
+            return redirect('/virtuallan')->with('success', 'Virtual LAN created!');
+        else
+            return redirect()->back()->with('error', 'Virtual LAN create failed!');
     }
 
     /**
@@ -45,7 +55,8 @@ class VirtualLANController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = VirtualLAN::find($id);
+        return view('virtuallan.form', ['data' => $data]);
     }
 
     /**
@@ -56,7 +67,8 @@ class VirtualLANController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data = VirtualLAN::find($id);
+        return view('virtuallan.form', ['data' => $data]);
     }
 
     /**
@@ -68,7 +80,14 @@ class VirtualLANController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = VirtualLAN::find($id);
+        $updateddata = $request->only($data->getFillable());
+        $data->fill($updateddata);
+
+        if ($data->save())
+            return redirect('/virtuallan')->with('success', 'Virtual LAN updated!');
+        else
+            return redirect()->back()->with('error', 'Virtual LAN update failed!');
     }
 
     /**
@@ -79,6 +98,10 @@ class VirtualLANController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = VirtualLAN::find($id);
+        if ($data->delete())
+            return redirect('/virtuallan')->with('success', 'Virtual LAN deleted!');
+        else
+            return redirect('/virtuallan')->with('error', 'Virtual LAN delete failed!');
     }
 }

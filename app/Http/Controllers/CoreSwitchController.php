@@ -3,9 +3,15 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use NetIve\CoreSwitch;
 
 class CoreSwitchController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +19,8 @@ class CoreSwitchController extends Controller
      */
     public function index()
     {
-        //
+        $list = CoreSwitch::all();
+        return view('coreswitch.index', ['listdata' => $list]);
     }
 
     /**
@@ -23,7 +30,7 @@ class CoreSwitchController extends Controller
      */
     public function create()
     {
-        //
+        return view('coreswitch.form', ['data' => new CoreSwitch()]);
     }
 
     /**
@@ -34,7 +41,10 @@ class CoreSwitchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (CoreSwitch::create($request->all()))
+            return redirect('/coreswitch')->with('success', 'CoreSwitch created!');
+        else
+            return redirect()->back()->with('error', 'CoreSwitch create failed!');
     }
 
     /**
@@ -45,7 +55,8 @@ class CoreSwitchController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = CoreSwitch::find($id);
+        return view('coreswitch.form', ['data' => $data]);
     }
 
     /**
@@ -56,7 +67,8 @@ class CoreSwitchController extends Controller
      */
     public function edit($id)
     {
-        //
+        $data = CoreSwitch::find($id);
+        return view('coreswitch.form', ['data' => $data]);
     }
 
     /**
@@ -68,7 +80,14 @@ class CoreSwitchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = CoreSwitch::find($id);
+        $updateddata = $request->only($data->getFillable());
+        $data->fill($updateddata);
+
+        if ($data->save())
+            return redirect('/coreswitch')->with('success', 'CoreSwitch updated!');
+        else
+            return redirect()->back()->with('error', 'CoreSwitch update failed!');
     }
 
     /**
@@ -79,6 +98,10 @@ class CoreSwitchController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = CoreSwitch::find($id);
+        if ($data->delete())
+            return redirect('/coreswitch')->with('success', 'CoreSwitch deleted!');
+        else
+            return redirect('/coreswitch')->with('error', 'CoreSwitch delete failed!');
     }
 }
