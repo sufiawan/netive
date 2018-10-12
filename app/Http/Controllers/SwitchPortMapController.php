@@ -3,9 +3,9 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
-use NetIve\UnmanageableSwitch;
+use NetIve\VirtualLAN;
 
-class UnmanageableSwitchController extends Controller
+class SwitchPortMapController extends Controller
 {
     public function __construct()
     {
@@ -19,8 +19,8 @@ class UnmanageableSwitchController extends Controller
      */
     public function index()
     {
-        $list = UnmanageableSwitch::all();
-        return view('unmanageableswitch.index', ['listdata' => $list]);
+        $list = VirtualLAN::all();
+        return view('switchportmap.index', ['listdata' => $list]);
     }
 
     /**
@@ -30,7 +30,7 @@ class UnmanageableSwitchController extends Controller
      */
     public function create()
     {
-        return view('unmanageableswitch.form', ['data' => new UnmanageableSwitch()]);
+        //
     }
 
     /**
@@ -41,10 +41,7 @@ class UnmanageableSwitchController extends Controller
      */
     public function store(Request $request)
     {
-        if (UnmanageableSwitch::create($request->all()))
-            return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch created!');
-        else
-            return redirect()->back()->with('error', 'Unmanageable Switch create failed!');
+        //
     }
 
     /**
@@ -55,8 +52,7 @@ class UnmanageableSwitchController extends Controller
      */
     public function show($id)
     {
-        $data = UnmanageableSwitch::find($id);
-        return view('unmanageableswitch.form', ['data' => $data]);
+        //
     }
 
     /**
@@ -67,8 +63,7 @@ class UnmanageableSwitchController extends Controller
      */
     public function edit($id)
     {
-        $data = UnmanageableSwitch::find($id);
-        return view('unmanageableswitch.form', ['data' => $data]);
+        //
     }
 
     /**
@@ -80,14 +75,7 @@ class UnmanageableSwitchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = UnmanageableSwitch::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch updated!');
-        else
-            return redirect()->back()->with('error', 'Unmanageable Switch update failed!');
+        //
     }
 
     /**
@@ -98,10 +86,6 @@ class UnmanageableSwitchController extends Controller
      */
     public function destroy($id)
     {
-        $data = UnmanageableSwitch::find($id);
-        if ($data->delete())
-            return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch deleted!');
-        else
-            return redirect('/unmanageableswitch')->with('error', 'Unmanageable Switch delete failed!');
+        //
     }
 }

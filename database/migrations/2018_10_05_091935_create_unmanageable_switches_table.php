@@ -15,8 +15,8 @@ class CreateUnmanageableSwitchesTable extends Migration
     {
         Schema::create('unmanageable_switches', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('id_vlan')->nullable();
-            $table->foreign('id_vlan')->references('id')->on('virtual_l_a_ns');
+            $table->unsignedInteger('vlan_id')->nullable();
+            $table->foreign('vlan_id')->references('id')->on('virtual_l_a_ns');
             $table->string('brand_type', 150);
             $table->string('bmn_number')->nullable();
             $table->year('purchase_year');

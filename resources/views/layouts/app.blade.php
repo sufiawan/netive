@@ -238,13 +238,13 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../../pages/charts/chartjs.html">
+            <a class="nav-link" href="/switchportmap">
               <i class="menu-icon mdi mdi-lan"></i>
               <span class="menu-title">Switch Port Map</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../../pages/tables/basic-table.html">
+            <a class="nav-link" href="/user">
               <i class="menu-icon mdi mdi-account-multiple"></i>
               <span class="menu-title">Master User</span>
             </a>

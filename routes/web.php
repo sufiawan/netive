@@ -18,8 +18,8 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
 Route::resource('accesspoint', 'AccessPointController');
-// Route::get('/accesspoint//{accesspoint}/', 'HomeController@index')->name('home');
 
 Route::resource('bandwidthmanagement', 'BandwidthManagementController');
 
@@ -40,3 +40,7 @@ Route::resource('unmanageableswitch', 'UnmanageableSwitchController');
 Route::resource('virtuallan', 'VirtualLANController');
 
 Route::resource('enddevice', 'EndDeviceController');
+
+Route::resource('user', 'UserController');
+
+Route::resource('switchportmap', 'SwitchPortMapController');
