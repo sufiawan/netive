@@ -14,7 +14,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         {{ Form::label('brand_type', 'Brand & Type') }}
-                        <input id="brand_type" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="brand_type" value="{{ old('brand_type', $data->brand_type) }}" placeholder="brand & type" required>
+                        <input id="brand_type" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="brand_type" value="{{ old('brand_type', $accesspoint->brand_type) }}" placeholder="brand & type" required>
                         @if ($errors->has('string'))
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $errors->first('string') }}</strong>

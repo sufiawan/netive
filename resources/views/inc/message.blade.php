@@ -1,4 +1,4 @@
-@if(count($errors) > 0)
+<!-- @if(count($errors) > 0)
     @foreach($errors->all() as $err)
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ $err }}
@@ -7,7 +7,7 @@
             </button>
         </div>
     @endforeach
-@endif
+@endif -->
 
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">

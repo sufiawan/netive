@@ -3,6 +3,7 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use NetIve\User;
 
 class UserController extends Controller
@@ -10,6 +11,16 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    function rules()
+    {
+        return [
+            'nip' => 'required|numeric|digits:18',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ];
     }
 
     /**
@@ -31,7 +42,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('auth.register');
+        return view('user.form', ['data' => new User()]);
     }
 
     /**
@@ -42,7 +53,11 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate($this->rules());
+        if (User::create($request->all()))
+            return redirect('/user')->with('success', 'User created!');
+        else
+            return redirect()->back()->with('error', 'User create failed!');
     }
 
     /**
@@ -53,7 +68,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        return User::find($id);
+        $data = User::find($id);
+        return view('user.form', ['data' => $data]);
     }
 
     /**
@@ -64,7 +80,8 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        return User::find($id);
+        $data = User::find($id);
+        return view('user.form', ['data' => $data]);
     }
 
     /**
@@ -76,7 +93,14 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = User::find($id);
+        $updateddata = $request->only($data->getFillable());
+        $data->fill($updateddata);
+
+        if ($data->save())
+            return redirect('/user')->with('success', 'User updated!');
+        else
+            return redirect()->back()->with('error', 'User update failed!');
     }
 
     /**
@@ -87,6 +111,10 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = User::find($id);
+        if ($data->delete())
+            return redirect('/user')->with('success', 'User deleted!');
+        else
+            return redirect('/user')->with('error', 'User delete failed!');
     }
 }
