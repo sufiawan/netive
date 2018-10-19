@@ -1,12 +1,6 @@
 @extends('layouts.app')
 
-@section('content')
-    <!-- <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Network Devices</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Access Point</li>
-        </ol>
-    </nav> -->
+@section('content')	
     <div class="pb-2 mb-2"><h2>User</h2></div>
     <div class="card">
         <div class="card-body">
@@ -23,7 +17,7 @@
                             <th>Role</th>
                             <th>Action</th>
                         </tr>
-                        {{ csrf_field() }}
+                        @csrf
                     </thead>
                     <tbody>
                         @foreach($listdata as $data)

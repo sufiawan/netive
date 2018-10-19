@@ -3,8 +3,10 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use NetIve\User;
+use NetIve\Role;
 
 class UserController extends Controller
 {
@@ -30,8 +32,9 @@ class UserController extends Controller
      */
     public function index()
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $list = User::all();
-        // return $list;
         return view('user.index', ['listdata' => $list]);
     }
 
@@ -41,8 +44,8 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        return view('user.form', ['data' => new User()]);
+    {        
+        return view('user.form', ['data' => new User(), 'roles' => Role::all()]);
     }
 
     /**
@@ -54,6 +57,8 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate($this->rules());
+        
+        $request['password'] = Hash::make($request->password);
         if (User::create($request->all()))
             return redirect('/user')->with('success', 'User created!');
         else
@@ -81,7 +86,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $data = User::find($id);
-        return view('user.form', ['data' => $data]);
+        return view('user.form', ['data' => $data, 'roles' => Role::all()]);
     }
 
     /**

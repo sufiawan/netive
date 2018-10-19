@@ -24,7 +24,7 @@
         src: url('fonts/Nunito-Regular.tff');
       }
     </style>
-
+    
     <!-- Styles -->
     <!-- <link href="{{ asset('css/app.css') }}" rel="stylesheet">     -->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
@@ -59,7 +59,7 @@
               <div class="dropdown-divider"></div>
               <a class="dropdown-item preview-item">
                 <div class="preview-thumbnail">
-                  <img src="../../images/faces/face4.jpg" alt="image" class="profile-pic">
+                  <img src="/images/faces/face4.jpg" alt="image" class="profile-pic">
                 </div>
                 <div class="preview-item-content flex-grow">
                   <h6 class="preview-subject ellipsis font-weight-medium text-dark">David Grey
@@ -155,20 +155,7 @@
               </a>
             </div>
           </li>
-          @auth
-          <li class="nav-item dropdown d-none d-xl-inline-block">
-            <a class="nav-link dropdown-toggle" id="UserDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-              <span class="profile-text">Hello, {{ Auth::user()->name }} !</span>
-              <!-- <img class="img-xs rounded-circle" src="../../images/faces/face1.jpg" alt="Profile image"> -->
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
-              <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                Sign Out
-              </a>
-              <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
-            </div>
-          </li>
-          @endauth
+          
         </ul>
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
           <span class="mdi mdi-menu"></span>
@@ -181,10 +168,33 @@
 
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
+        	<li class="nav-item nav-profile">
+            <div class="nav-link">
+              <div class="user-wrapper">
+                <div class="profile-image">
+                  <img src="/images/face.png" alt="profile image">
+                </div>
+                <div class="text-wrapper">
+                  <p class="profile-name">{{ Auth::user()->name }}</p>
+                  <div>
+                    <small class="designation text-muted">{{ Auth::user()->role->name }}</small>
+                    <span class="status-indicator online"></span>
+                  </div>
+                </div>
+              </div>              
+            </div>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="/home">
               <i class="menu-icon mdi mdi-television"></i>
               <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          @if (Auth::user()->role->name == 'Administrator')
+          <li class="nav-item">
+            <a class="nav-link" href="/user">
+              <i class="menu-icon mdi mdi-account-multiple"></i>
+              <span class="menu-title">Master User</span>
             </a>
           </li>
           <li class="nav-item">
@@ -231,56 +241,27 @@
               <span class="menu-title">Virtual LAN</span>
             </a>
           </li>
+          @endif
           <li class="nav-item">
             <a class="nav-link" href="/enddevice">
               <i class="menu-icon mdi mdi-laptop-windows"></i>
               <span class="menu-title">End Device</span>
             </a>
-          </li>
+          </li>          
           <li class="nav-item">
             <a class="nav-link" href="/switchportmap">
               <i class="menu-icon mdi mdi-lan"></i>
               <span class="menu-title">Switch Port Map</span>
             </a>
-          </li>
+          </li>          
+          <hr />
           <li class="nav-item">
-            <a class="nav-link" href="/user">
-              <i class="menu-icon mdi mdi-account-multiple"></i>
-              <span class="menu-title">Master User</span>
+            <a class="nav-link" href="#" onclick="event.preventDefault(); bootbox.confirm('Are you sure want to log out?', function(result) { if (result) { document.getElementById('logout-form').submit(); }})">
+              <i class="menu-icon mdi mdi-logout"></i>
+              <span class="menu-title">Logout</span>
             </a>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="../../pages/icons/font-awesome.html">
-              <i class="menu-icon mdi mdi-sticker"></i>
-              <span class="menu-title">Icons</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-              <i class="menu-icon mdi mdi-restart"></i>
-              <span class="menu-title">User Pages</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="auth">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item">
-                  <a class="nav-link" href="../../pages/samples/blank-page.html"> Blank Page </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="../../pages/samples/login.html"> Login </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="../../pages/samples/register.html"> Register </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="../../pages/samples/error-404.html"> 404 </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="../../pages/samples/error-500.html"> 500 </a>
-                </li>
-              </ul>
-            </div>
-          </li> -->
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
+          </li>          
         </ul>
       </nav>
 
