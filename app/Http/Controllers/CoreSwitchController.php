@@ -3,13 +3,25 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\CoreSwitch;
+use NetIve\CoreSwitchPort;
+use Exception;
 
 class CoreSwitchController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'brand_type', 'device_username', 'device_password' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip'
+        ];
     }
 
     /**
@@ -41,10 +53,24 @@ class CoreSwitchController extends Controller
      */
     public function store(Request $request)
     {
-        if (CoreSwitch::create($request->all()))
-            return redirect('/coreswitch')->with('success', 'CoreSwitch created!');
-        else
-            return redirect()->back()->with('error', 'CoreSwitch create failed!');
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                $csid = CoreSwitch::create($request->all());
+                for ($i=1; $i<$request->number_of_port+1; $i++)
+                {
+                    CoreSwitchPort::create([
+                        'core_switch_id' => $csid->id,
+                        'port_number' => 'Port '.$i
+                    ]);                
+                }
+            });
+        } catch (Exception $exc) {
+            return redirect()->back()->with('error', 'Core Switch create failed!');
+        }
+        
+        return redirect('/coreswitch')->with('success', 'Core Switch created!');        
     }
 
     /**
@@ -80,14 +106,19 @@ class CoreSwitchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = CoreSwitch::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/coreswitch')->with('success', 'CoreSwitch updated!');
-        else
-            return redirect()->back()->with('error', 'CoreSwitch update failed!');
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = CoreSwitch::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)-save();
+            });
+        } catch (Exception $exc) {
+            return redirect()->back()->with('error', 'Core Switch update failed!');
+        }
+        
+        return redirect('/coreswitch')->with('success', 'Core Switch updated!');
     }
 
     /**
@@ -98,10 +129,13 @@ class CoreSwitchController extends Controller
      */
     public function destroy($id)
     {
-        $data = CoreSwitch::find($id);
-        if ($data->delete())
-            return redirect('/coreswitch')->with('success', 'CoreSwitch deleted!');
-        else
-            return redirect('/coreswitch')->with('error', 'CoreSwitch delete failed!');
+        try {
+            DB::transaction(function() use ($id) {
+                CoreSwitch::find($id)->delete();
+            });
+        } catch (Exception $exc) {
+            return redirect('/coreswitch')->with('error', 'Core Switch delete failed!');
+        }
+        return redirect('/coreswitch')->with('success', 'Core Switch deleted!');
     }
 }

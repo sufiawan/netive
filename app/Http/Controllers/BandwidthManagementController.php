@@ -3,13 +3,24 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\BandwidthManagement;
+use Exception;
 
 class BandwidthManagementController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'brand_type', 'device_username', 'device_password' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip'
+        ];
     }
 
     /**
@@ -41,10 +52,17 @@ class BandwidthManagementController extends Controller
      */
     public function store(Request $request)
     {
-        if (BandwidthManagement::create($request->all()))
-            return redirect('/bandwidthmanagement')->with('success', 'Bandwidth Management created!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                BandwidthManagement::create($request->all());
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Bandwidth Management create failed!');
+        }
+        
+        return redirect('/bandwidthmanagement')->with('success', 'Bandwidth Management created!');        
     }
 
     /**
@@ -80,14 +98,19 @@ class BandwidthManagementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = BandwidthManagement::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/bandwidthmanagement')->with('success', 'Bandwidth Management updated!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = BandwidthManagement::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Bandwidth Management update failed!');
+        }
+        
+        return redirect('/bandwidthmanagement')->with('success', 'Bandwidth Management updated!');               
     }
 
     /**
@@ -98,10 +121,14 @@ class BandwidthManagementController extends Controller
      */
     public function destroy($id)
     {
-        $data = BandwidthManagement::find($id);
-        if ($data->delete())
-            return redirect('/bandwidthmanagement')->with('success', 'Bandwidth Management deleted!');
-        else
+        try {
+            DB::transaction(function() use ($id) {
+                BandwidthManagement::find($id)->delete();
+            });
+        } catch (Exception $exc) {
             return redirect('/bandwidthmanagement')->with('error', 'Bandwidth Management delete failed!');
+        }
+        
+        return redirect('/bandwidthmanagement')->with('success', 'Bandwidth Management deleted!');           
     }
 }

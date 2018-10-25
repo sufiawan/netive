@@ -25,11 +25,9 @@ class CreateServersTable extends Migration
             $table->string('cpu');
             $table->smallInteger('cpu_core');
             $table->string('hdd');
-            $table->integer('hdd_capacity');
-            $table->char('hdd_capacity_opt', 2);
+            $table->decimal('hdd_capacity', 10, 1);            
             $table->string('ram');
-            $table->integer('ram_capacity');
-            $table->char('ram_capacity_opt', 2);
+            $table->decimal('ram_capacity', 10, 1);
             $table->string('os')->nullable();
             $table->timestamps();
         });

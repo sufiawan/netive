@@ -3,13 +3,23 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\EndDevice;
+use Exception;
 
 class EndDeviceController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'name' => 'required',            
+            'ip_address' => 'nullable|ip'
+        ];
     }
 
     /**
@@ -41,10 +51,17 @@ class EndDeviceController extends Controller
      */
     public function store(Request $request)
     {
-        if (EndDevice::create($request->all()))
-            return redirect('/enddevice')->with('success', 'EndDevice created!');
-        else
-            return redirect()->back()->with('error', 'EndDevice create failed!');
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                EndDevice::create($request->all());
+            });
+        } catch (Exception $exc) {
+            return redirect()->back()->with('error', 'End Device create failed!');
+        }
+        
+        return redirect('/enddevice')->with('success', 'End Device created!');
     }
 
     /**
@@ -80,14 +97,19 @@ class EndDeviceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = EndDevice::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/enddevice')->with('success', 'EndDevice updated!');
-        else
-            return redirect()->back()->with('error', 'EndDevice update failed!');
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = EndDevice::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
+            return redirect()->back()->with('error', 'End Device update failed!');
+        }
+        
+        return redirect('/enddevice')->with('success', 'End Device updated!');
     }
 
     /**
@@ -98,10 +120,14 @@ class EndDeviceController extends Controller
      */
     public function destroy($id)
     {
-        $data = EndDevice::find($id);
-        if ($data->delete())
-            return redirect('/enddevice')->with('success', 'EndDevice deleted!');
-        else
-            return redirect('/enddevice')->with('error', 'EndDevice delete failed!');
+        try {
+            DB::transaction(function() use ($id) {
+                EndDevice::find($id)->delete();
+            });
+        } catch (Exception $exc) {
+            return redirect('/enddevice')->with('error', 'End Device delete failed!');
+        }
+        
+        return redirect('/enddevice')->with('success', 'End Device deleted!');
     }
 }

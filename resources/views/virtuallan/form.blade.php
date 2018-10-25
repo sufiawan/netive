@@ -15,8 +15,8 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         {{ Form::label('name', 'Name') }}
-                        <input id="name" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="name" value="{{ old('name', $data->name) }}"  placeholder="name" required>
-                        @if ($errors->has('string'))
+                        <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name', $data->name) }}"  placeholder="name" required>
+                        @if ($errors->has('name'))
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $errors->first('string') }}</strong>
                             </span>
@@ -24,10 +24,10 @@
                     </div>
                     <div class="form-group col-md-6">
                         {{ Form::label('ip_segment', 'IP Segment') }}
-                        <input id="ip_segment" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="ip_segment" value="{{ old('ip_segment', $data->ip_segment) }}" placeholder="ip segment" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}">
-                        @if ($errors->has('ipaddress'))
+                        <input id="ip_segment" type="text" class="form-control{{ $errors->has('ip_segment') ? ' is-invalid' : '' }}" name="ip_segment" value="{{ old('ip_segment', $data->ip_segment) }}" placeholder="ip segment" pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}">
+                        @if ($errors->has('ip_segment'))
                             <span class="invalid-feedback" role="alert">
-                                <strong>{{ $errors->first('ipaddress') }}</strong>
+                                <strong>{{ $errors->first('ip_segment') }}</strong>
                             </span>
                         @endif
                     </div>
@@ -36,12 +36,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         {{ Form::label('description', 'Description') }}
-                        <input id="description" type="text" class="form-control{{ $errors->has('string') ? ' is-invalid' : '' }}" name="description" value="{{ old('description', $data->description) }}" placeholder="description">
-                        @if ($errors->has('string'))
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $errors->first('string') }}</strong>
-                            </span>
-                        @endif
+                        <input id="description" type="text" class="form-control" name="description" value="{{ old('description', $data->description) }}" placeholder="description">                        
                     </div>
                 </div>
 
@@ -52,8 +47,7 @@
                         </button>
                         <a href="/virtuallan" class="btn btn-secondary">Back</a>
                     </div>
-                </div>
-            </form>
+                </div>            
             {!! Form::close() !!}
         </div>
     </div>

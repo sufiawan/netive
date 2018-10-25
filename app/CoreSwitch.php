@@ -10,8 +10,8 @@ class CoreSwitch extends Model
         'brand_type', 'bmn_number', 'purchase_year', 'ip_address', 'device_username', 'device_password'
     ];
     
-    public function coreswitchport()
+    public function ports()
     {
-        return $this->belongsTo(CoreSwitchPort::class);
+        return $this->hasMany(CoreSwitchPort::class, 'core_switch_id');
     }
 }

@@ -3,13 +3,25 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\ManageableSwitch;
+use Exception;
+use NetIve\ManageableSwitchPort;
 
 class ManageableSwitchController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'brand_type', 'device_username', 'device_password' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip'
+        ];
     }
 
     /**
@@ -41,10 +53,24 @@ class ManageableSwitchController extends Controller
      */
     public function store(Request $request)
     {
-        if (ManageableSwitch::create($request->all()))
-            return redirect('/manageableswitch')->with('success', 'ManageableSwitch created!');
-        else
-            return redirect()->back()->with('error', 'ManageableSwitch create failed!');
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                $csid = ManageableSwitch::create($request->all());
+                for ($i=1; $i<$request->number_of_port+1; $i++)
+                {
+                    ManageableSwitchPort::create([
+                        'manageable_switch_id' => $csid->id,
+                        'port_number' => 'Port '.$i
+                    ]);
+                }
+            });
+        } catch (Exception $exc) {
+            return redirect()->back()->with('error', 'Manageable Switch create failed!');
+        }
+        
+        return redirect('/manageableswitch')->with('success', 'Manageable Switch created!');        
     }
 
     /**
@@ -79,15 +105,20 @@ class ManageableSwitchController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        $data = ManageableSwitch::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/manageableswitch')->with('success', 'ManageableSwitch updated!');
-        else
-            return redirect()->back()->with('error', 'ManageableSwitch update failed!');
+    {        
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = ManageableSwitch::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
+            return redirect()->back()->with('error', 'Manageable Switch update failed!');
+        }
+        
+        return redirect('/manageableswitch')->with('success', 'Manageable Switch updated!');
     }
 
     /**
@@ -98,10 +129,14 @@ class ManageableSwitchController extends Controller
      */
     public function destroy($id)
     {
-        $data = ManageableSwitch::find($id);
-        if ($data->delete())
-            return redirect('/manageableswitch')->with('success', 'ManageableSwitch deleted!');
-        else
-            return redirect('/manageableswitch')->with('error', 'ManageableSwitch delete failed!');
+        try {
+            DB::transaction(function() use ($id) {
+                ManageableSwitch::find($id)->delete();
+            });
+        } catch (Exception $exc) {
+            return redirect('/manageableswitch')->with('error', 'Manageable Switch delete failed!');
+        }
+        
+        return redirect('/manageableswitch')->with('success', 'Manageable Switch deleted!');
     }
 }

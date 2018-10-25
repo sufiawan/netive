@@ -4,9 +4,9 @@ namespace NetIve;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CoreSwitchPort extends Model
+class UnmanageableSwitchPort extends Model
 {
     protected $fillable = [
-        'core_switch_id', 'port_number', 'ip_address'
+        'unmanageable_switch_id', 'port_number', 'ip_address'
     ];
 }

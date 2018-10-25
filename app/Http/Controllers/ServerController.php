@@ -3,13 +3,25 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\Server;
+use Exception;
 
 class ServerController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'name', 'brand_type', 'device_username', 'device_password', 'cpu', 'hdd', 'ram' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip',
+            'cpu_core', 'hdd_capacity', 'ram_capacity' => 'required|numeric',
+        ];
     }
 
     /**
@@ -41,10 +53,17 @@ class ServerController extends Controller
      */
     public function store(Request $request)
     {
-        if (Server::create($request->all()))
-            return redirect('/server')->with('success', 'Server created!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                Server::create($request->all());
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Server create failed!');
+        }
+        
+        return redirect('/server')->with('success', 'Server created!');
     }
 
     /**
@@ -80,14 +99,19 @@ class ServerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = Server::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/server')->with('success', 'Server updated!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = Server::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Server update failed!');
+        }
+        
+        return redirect('/server')->with('success', 'Server updated!');        
     }
 
     /**
@@ -98,10 +122,14 @@ class ServerController extends Controller
      */
     public function destroy($id)
     {
-        $data = Server::find($id);
-        if ($data->delete())
-            return redirect('/server')->with('success', 'Server deleted!');
-        else
+        try {
+            DB::transaction(function() use ($id) {
+                Server::find($id)->delete();
+            });
+        } catch (Exception $exc) {
             return redirect('/server')->with('error', 'Server delete failed!');
+        }
+        
+        return redirect('/server')->with('success', 'Server deleted!');
     }
 }

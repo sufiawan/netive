@@ -3,13 +3,25 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\UnmanageableSwitch;
+use NetIve\UnmanageableSwitchPort;
+use Exception;
 
 class UnmanageableSwitchController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'brand_type', 'device_username', 'device_password' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip'
+        ];
     }
 
     /**
@@ -41,10 +53,24 @@ class UnmanageableSwitchController extends Controller
      */
     public function store(Request $request)
     {
-        if (UnmanageableSwitch::create($request->all()))
-            return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch created!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                $csid = UnmanageableSwitch::create($request->all());
+                for ($i=1; $i<$request->number_of_port+1; $i++)
+                {
+                    UnmanageableSwitchPort::create([
+                        'unmanageable_switch_id' => $csid->id,
+                        'port_number' => 'Port '.$i
+                    ]);
+                }
+            });
+        } catch (Exception $exc) {            
             return redirect()->back()->with('error', 'Unmanageable Switch create failed!');
+        }
+        
+        return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch created!');
     }
 
     /**
@@ -80,14 +106,19 @@ class UnmanageableSwitchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = UnmanageableSwitch::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch updated!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = UnmanageableSwitch::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Unmanageable Switch update failed!');
+        }
+        
+        return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch updated!');
     }
 
     /**
@@ -98,10 +129,14 @@ class UnmanageableSwitchController extends Controller
      */
     public function destroy($id)
     {
-        $data = UnmanageableSwitch::find($id);
-        if ($data->delete())
-            return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch deleted!');
-        else
+        try {
+            DB::transaction(function() use ($id) {
+                UnmanageableSwitch::find($id)->delete();
+            });
+        } catch (Exception $exc) {
             return redirect('/unmanageableswitch')->with('error', 'Unmanageable Switch delete failed!');
+        }
+        
+        return redirect('/unmanageableswitch')->with('success', 'Unmanageable Switch deleted!');
     }
 }

@@ -3,8 +3,9 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use NetIve\AccessPoint;
+use Exception;
 
 class AccessPointController extends Controller
 {
@@ -13,13 +14,13 @@ class AccessPointController extends Controller
         $this->middleware('auth');
     }
 
-    protected function validator(Request $request)
+    function rules()
     {
-        return Validator::make($request, [
-            'ipaddress' => 'ip',
-            'string' => 'required|string',
-            'year' => 'required|numeric|digits:4'
-        ]);
+        return [
+            'brand_type', 'device_username', 'device_password' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip'            
+        ];
     }
 
     /**
@@ -31,7 +32,7 @@ class AccessPointController extends Controller
     {
         $aps = AccessPoint::all();
         return view('accesspoint.index', ['accesspoints' => $aps]);
-    }
+    }    
 
     /**
      * Show the form for creating a new resource.
@@ -51,10 +52,17 @@ class AccessPointController extends Controller
      */
     public function store(Request $request)
     {
-        if (AccessPoint::create($request->all()))
-            return redirect('/accesspoint')->with('success', 'Access Point created!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                AccessPoint::create($request->all());
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Access Point create failed!');
+        }
+        
+        return redirect('/accesspoint')->with('success', 'Access Point created!');                    
     }
 
     /**
@@ -90,14 +98,19 @@ class AccessPointController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $ap = AccessPoint::find($id);
-        $data = $request->only($ap->getFillable());
-        $ap->fill($data);
-
-        if ($ap->save())
-            return redirect('/accesspoint')->with('success', 'Access Point updated!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $ap = AccessPoint::find($id);
+                $data = $request->only($ap->getFillable());
+                $ap->fill($data)->save();                
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Access Point update failed!');
+        }                          
+        
+        return redirect('/accesspoint')->with('success', 'Access Point updated!');
     }
 
     /**
@@ -108,10 +121,14 @@ class AccessPointController extends Controller
      */
     public function destroy($id)
     {
-        $ap = AccessPoint::find($id);
-        if ($ap->delete())
-            return redirect('/accesspoint')->with('success', 'Access Point deleted!');
-        else
+        try {
+            DB::transaction(function() use ($id) {
+                AccessPoint::find($id)->delete();
+            });
+        } catch (Exception $exc) {
             return redirect('/accesspoint')->with('error', 'Access Point delete failed!');
+        }
+        
+        return redirect('/accesspoint')->with('success', 'Access Point deleted!');           
     }
 }

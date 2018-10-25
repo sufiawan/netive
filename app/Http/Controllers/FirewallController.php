@@ -3,13 +3,24 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\Firewall;
+use Exception;
 
 class FirewallController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'brand_type', 'device_username', 'device_password' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip'
+        ];
     }
 
     /**
@@ -41,10 +52,17 @@ class FirewallController extends Controller
      */
     public function store(Request $request)
     {
-        if (Firewall::create($request->all()))
-            return redirect('/firewall')->with('success', 'Firewall created!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                Firewall::create($request->all());
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Firewall create failed!');
+        }
+        
+        return redirect('/firewall')->with('success', 'Firewall created!');
     }
 
     /**
@@ -80,14 +98,19 @@ class FirewallController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = Firewall::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/firewall')->with('success', 'Firewall updated!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = Firewall::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Firewall update failed!');
+        }
+        
+        return redirect('/firewall')->with('success', 'Firewall updated!');
     }
 
     /**
@@ -98,10 +121,14 @@ class FirewallController extends Controller
      */
     public function destroy($id)
     {
-        $data = Firewall::find($id);
-        if ($data->delete())
-            return redirect('/firewall')->with('success', 'Firewall deleted!');
-        else
+        try {
+            DB::transaction(function() use ($id) {
+                Firewall::find($id)->delete();
+            });
+        } catch (Exception $exc) {
             return redirect('/firewall')->with('error', 'Firewall delete failed!');
+        }
+        
+        return redirect('/firewall')->with('success', 'Firewall deleted!');
     }
 }

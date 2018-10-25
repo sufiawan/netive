@@ -4,9 +4,11 @@ namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use NetIve\User;
 use NetIve\Role;
+use Exception;
 
 class UserController extends Controller
 {
@@ -44,7 +46,9 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {        
+    {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         return view('user.form', ['data' => new User(), 'roles' => Role::all()]);
     }
 
@@ -56,6 +60,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $request->validate($this->rules());
         
         $request['password'] = Hash::make($request->password);
@@ -73,6 +79,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $data = User::find($id);
         return view('user.form', ['data' => $data]);
     }
@@ -85,6 +93,8 @@ class UserController extends Controller
      */
     public function edit($id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $data = User::find($id);
         return view('user.form', ['data' => $data, 'roles' => Role::all()]);
     }
@@ -98,14 +108,21 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = User::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/user')->with('success', 'User updated!');
-        else
+        Auth::User()->authorizeRoles(['administrator']);
+        
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = User::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'User update failed!');
+        }
+        
+        return redirect('/user')->with('success', 'User updated!');
     }
 
     /**
@@ -116,10 +133,16 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $data = User::find($id);
-        if ($data->delete())
-            return redirect('/user')->with('success', 'User deleted!');
-        else
+        Auth::User()->authorizeRoles(['administrator']);
+        
+        try {
+            DB::transaction(function() use ($id) {
+                User::find($id)->delete();
+            });
+        } catch (Exception $exc) {
             return redirect('/user')->with('error', 'User delete failed!');
+        }
+                
+        return redirect('/user')->with('success', 'User deleted!');           
     }
 }

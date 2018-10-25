@@ -3,13 +3,24 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\Gateway;
+use Exception;
 
 class GatewayController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'brand_type', 'device_username', 'device_password' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip'
+        ];
     }
 
     /**
@@ -41,10 +52,17 @@ class GatewayController extends Controller
      */
     public function store(Request $request)
     {
-        if (Gateway::create($request->all()))
-            return redirect('/gateway')->with('success', 'Gateway created!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                Gateway::create($request->all());
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Gateway create failed!');
+        }
+        
+        return redirect('/gateway')->with('success', 'Gateway created!');
     }
 
     /**
@@ -80,14 +98,19 @@ class GatewayController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = Gateway::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/gateway')->with('success', 'Gateway updated!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = Gateway::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Gateway update failed!');
+        }
+        
+        return redirect('/gateway')->with('success', 'Gateway updated!');
     }
 
     /**
@@ -98,10 +121,14 @@ class GatewayController extends Controller
      */
     public function destroy($id)
     {
-        $data = Gateway::find($id);
-        if ($data->delete())
-            return redirect('/gateway')->with('success', 'Gateway deleted!');
-        else
+        try {
+            DB::transaction(function() use ($id) {
+                Gateway::find($id)->delete();
+            });
+        } catch (Exception $exc) {
             return redirect('/gateway')->with('error', 'Gateway delete failed!');
+        }
+        
+        return redirect('/gateway')->with('success', 'Gateway deleted!');
     }
 }

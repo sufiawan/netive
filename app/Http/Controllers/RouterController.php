@@ -3,13 +3,24 @@
 namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use NetIve\Router;
+use Exception;
 
 class RouterController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    
+    function rules()
+    {
+        return [
+            'brand_type', 'device_username', 'device_password' => 'required',
+            'purchase_year' => 'required|numeric|digits:4',
+            'ip_address' => 'nullable|ip'
+        ];
     }
 
     /**
@@ -41,10 +52,17 @@ class RouterController extends Controller
      */
     public function store(Request $request)
     {
-        if (Router::create($request->all()))
-            return redirect('/router')->with('success', 'Router created!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request) {
+                Router::create($request->all());
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Router create failed!');
+        }
+        
+        return redirect('/router')->with('success', 'Router created!');
     }
 
     /**
@@ -80,14 +98,19 @@ class RouterController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = Router::find($id);
-        $updateddata = $request->only($data->getFillable());
-        $data->fill($updateddata);
-
-        if ($data->save())
-            return redirect('/router')->with('success', 'Router updated!');
-        else
+        $request->validate($this->rules());
+        
+        try {
+            DB::transaction(function() use ($request, $id) {
+                $data = Router::find($id);
+                $updateddata = $request->only($data->getFillable());
+                $data->fill($updateddata)->save();
+            });
+        } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Router update failed!');
+        }
+        
+        return redirect('/router')->with('success', 'Router updated!');
     }
 
     /**
@@ -98,10 +121,14 @@ class RouterController extends Controller
      */
     public function destroy($id)
     {
-        $data = Router::find($id);
-        if ($data->delete())
-            return redirect('/router')->with('success', 'Router deleted!');
-        else
+        try {
+            DB::transaction(function() use ($id) {
+                Router::find($id)->delete();
+            });
+        } catch (Exception $exc) {
             return redirect('/router')->with('error', 'Router delete failed!');
+        }
+        
+        return redirect('/router')->with('success', 'Router deleted!');
     }
 }
