@@ -21,6 +21,7 @@
                             <th>Brand & Type</th>
                             <th>Year</th>
                             <th>IP Address</th>
+                            <th>Virtual Server</th>
                             <th>Action</th>
                         </tr>
                         {{ csrf_field() }}
@@ -32,6 +33,7 @@
                             <td>{{ $data->brand_type }}</td>
                             <td>{{ $data->purchase_year }}</td>
                             <td>{{ $data->ip_address }}</td>
+                            <td>{{ $data->virtualserver->count() }}</td>
                             <td><div><a href="/server/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>
                         </tr>
                         @endforeach

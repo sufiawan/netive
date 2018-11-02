@@ -55,8 +55,8 @@
             })
         }
 
-        $(document).ready( function () {
+        ( function($) {
             $('#tbldata').DataTable();
-        });
+        } ) ( jquery );
     </script>
 @endsection
