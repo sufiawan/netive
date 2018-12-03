@@ -4,6 +4,7 @@ namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use NetIve\EndDevice;
 use Exception;
 
@@ -17,8 +18,7 @@ class EndDeviceController extends Controller
     function rules()
     {
         return [
-            'name' => 'required',            
-            'ip_address' => 'nullable|ip'
+            'name' => 'required'            
         ];
     }
 
@@ -29,6 +29,8 @@ class EndDeviceController extends Controller
      */
     public function index()
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $list = EndDevice::all();
         return view('enddevice.index', ['listdata' => $list]);
     }
@@ -40,6 +42,8 @@ class EndDeviceController extends Controller
      */
     public function create()
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         return view('enddevice.form', ['data' => new EndDevice()]);
     }
 
@@ -51,6 +55,8 @@ class EndDeviceController extends Controller
      */
     public function store(Request $request)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $request->validate($this->rules());
         
         try {
@@ -72,6 +78,8 @@ class EndDeviceController extends Controller
      */
     public function show($id)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $data = EndDevice::find($id);
         return view('enddevice.form', ['data' => $data]);
     }
@@ -84,6 +92,8 @@ class EndDeviceController extends Controller
      */
     public function edit($id)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $data = EndDevice::find($id);
         return view('enddevice.form', ['data' => $data]);
     }
@@ -97,6 +107,8 @@ class EndDeviceController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $request->validate($this->rules());
         
         try {
@@ -120,6 +132,8 @@ class EndDeviceController extends Controller
      */
     public function destroy($id)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         try {
             DB::transaction(function() use ($id) {
                 EndDevice::find($id)->delete();

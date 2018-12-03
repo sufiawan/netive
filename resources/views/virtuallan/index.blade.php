@@ -20,6 +20,7 @@
                             <th>Name</th>
                             <th>IP Segment</th>
                             <th>Description</th>
+                            <th>Clients</th>
                             <th>Action</th>
                         </tr>
                         {{ csrf_field() }}
@@ -30,7 +31,11 @@
                             <td>{{ $data->name }}</td>
                             <td>{{ $data->ip_segment }}</td>
                             <td>{{ $data->description }}</td>
-                            <td><div><a href="/virtuallan/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>
+                            <td>{{ $data->clients->count() }} Clients <a href="/virtuallan/{{ $data->id }}" class="btn btn-sm btn-success mr-1">View</a></td>
+                            <td>                                
+                                <a href="/virtuallan/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>

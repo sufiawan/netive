@@ -4,7 +4,9 @@ namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use NetIve\VirtualLAN;
+use Illuminate\Support\Facades\Auth;
+use NetIve\VirtualLan;
+use NetIve\IpTable;
 use Exception;
 
 class VirtualLANController extends Controller
@@ -29,7 +31,9 @@ class VirtualLANController extends Controller
      */
     public function index()
     {
-        $list = VirtualLAN::all();
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
+        $list = VirtualLan::all();        
         return view('virtuallan.index', ['listdata' => $list]);
     }
 
@@ -40,7 +44,9 @@ class VirtualLANController extends Controller
      */
     public function create()
     {
-        return view('virtuallan.form', ['data' => new VirtualLAN()]);
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
+        return view('virtuallan.form', ['data' => new VirtualLan()]);
     }
 
     /**
@@ -51,14 +57,16 @@ class VirtualLANController extends Controller
      */
     public function store(Request $request)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $request->validate($this->rules());
         
         try {
             DB::transaction(function() use ($request) {
-                VirtualLAN::create($request->all());
+                VirtualLan::create($request->all());
             });
         } catch (Exception $exc) {
-            return redirect()->back()->with('error', 'Virtual LAN create failed!');
+            return redirect()->back()->with('error', 'Virtual LAN create failed!' . $exc->getMessage());
         }
         
         return redirect('/virtuallan')->with('success', 'Virtual LAN created!');
@@ -72,8 +80,12 @@ class VirtualLANController extends Controller
      */
     public function show($id)
     {
-        $data = VirtualLAN::find($id);
-        return view('virtuallan.form', ['data' => $data]);
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
+        $data = VirtualLan::find($id);
+        $clients = IpTable::where('vlan_id', $id)->get();
+        
+        return view('virtuallan.view', ['data' => $data, 'clients' => $clients]);
     }
 
     /**
@@ -84,7 +96,9 @@ class VirtualLANController extends Controller
      */
     public function edit($id)
     {
-        $data = VirtualLAN::find($id);
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
+        $data = VirtualLan::find($id);
         return view('virtuallan.form', ['data' => $data]);
     }
 
@@ -97,11 +111,13 @@ class VirtualLANController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $request->validate($this->rules());
         
         try {
             DB::transaction(function() use ($request, $id) {
-                $data = VirtualLAN::find($id);
+                $data = VirtualLan::find($id);
                 $updateddata = $request->only($data->getFillable());
                 $data->fill($updateddata)->save();
             });
@@ -120,9 +136,11 @@ class VirtualLANController extends Controller
      */
     public function destroy($id)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         try {
             DB::transaction(function() use ($id) {
-                VirtualLAN::find($id)->delete();
+                VirtualLan::find($id)->delete();
             });
         } catch (Exception $exc) {
             return redirect('/virtuallan')->with('error', 'Virtual LAN delete failed!');

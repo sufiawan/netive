@@ -4,8 +4,9 @@ namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use NetIve\Server;
-use Exception;
+use NetIve\NetworkDevice;
 
 class ServerController extends Controller
 {
@@ -31,6 +32,8 @@ class ServerController extends Controller
      */
     public function index()
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $list = Server::all();
         return view('server.index', ['listdata' => $list]);
     }
@@ -42,7 +45,9 @@ class ServerController extends Controller
      */
     public function create()
     {
-        return view('server.form', ['data' => new Server()]);
+        Auth::User()->authorizeRoles(['administrator']);
+        
+        return view('server.form', ['data' => new Server(), 'netdev' => new NetworkDevice()]);
     }
 
     /**
@@ -53,11 +58,14 @@ class ServerController extends Controller
      */
     public function store(Request $request)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $request->validate($this->rules());
         
         try {
             DB::transaction(function() use ($request) {
-                Server::create($request->all());
+                $netDev = NetworkDevice::create($request->all() + ['network_device_type_id' => 6]);
+                Server::create($request->all() + ['network_device_id' => $netDev->id]);
             });
         } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Server create failed!');
@@ -74,8 +82,11 @@ class ServerController extends Controller
      */
     public function show($id)
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $data = Server::find($id);
-        return view('server.form', ['data' => $data]);
+        $netDev = NetworkDevice::find($data->network_device_id);
+        return view('server.view', ['data' => $data, 'netdev' => $netDev]);        
     }
 
     /**
@@ -86,8 +97,11 @@ class ServerController extends Controller
      */
     public function edit($id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $data = Server::find($id);
-        return view('server.form', ['data' => $data]);
+        $netDev = NetworkDevice::find($data->network_device_id);
+        return view('server.form', ['data' => $data, 'netdev' => $netDev]); 
     }
 
     /**
@@ -99,13 +113,19 @@ class ServerController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $request->validate($this->rules());
         
         try {
             DB::transaction(function() use ($request, $id) {
-                $data = Server::find($id);
-                $updateddata = $request->only($data->getFillable());
-                $data->fill($updateddata)->save();
+                $srv = Server::find($id);
+                $data = $request->only($srv->getFillable());
+                $srv->fill($data)->save();
+                
+                $nd = NetworkDevice::find($srv->network_device_id);
+                $data = $request->only($nd->getFillable());
+                $nd->fill($data)->save();
             });
         } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Server update failed!');
@@ -122,9 +142,13 @@ class ServerController extends Controller
      */
     public function destroy($id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         try {
             DB::transaction(function() use ($id) {
-                Server::find($id)->delete();
+                $srv = Server::find($id);
+                $srv->delete();
+                NetworkDevice::find($srv->network_device_id)->delete();
             });
         } catch (Exception $exc) {
             return redirect('/server')->with('error', 'Server delete failed!');

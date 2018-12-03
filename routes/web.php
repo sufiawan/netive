@@ -31,16 +31,21 @@ Route::resource('router', 'RouterController');
 
 Route::resource('server', 'ServerController');
 
-Route::resource('coreswitch', 'CoreSwitchController');
+Route::resource('virtualserver', 'VirtualServerController');
 
-Route::resource('manageableswitch', 'ManageableSwitchController');
+Route::get('networkdevice/show/{typeid}', 'NetworkSwitchController@ShowAvailableNetwokDevice');
+Route::get('networkswitch/showport/{id}', 'NetworkSwitchController@ShowAvailableSwitchPort');
+Route::get('networkswitch/showip/{vlanid}', 'NetworkSwitchController@ShowAvailableIPAddress');
+Route::post('networkswitch/setport', 'NetworkSwitchController@SetPort');
+Route::post('networkswitch/setdevice', 'NetworkSwitchController@SetDevice');
+Route::post('networkswitch/unsetdevice', 'NetworkSwitchController@unsetDevice');
+Route::resource('networkswitch', 'NetworkSwitchController');
 
-Route::resource('unmanageableswitch', 'UnmanageableSwitchController');
+Route::resource('switchport', 'SwitchPortController');
 
 Route::resource('virtuallan', 'VirtualLANController');
 
 Route::resource('enddevice', 'EndDeviceController');
 
+Route::put('user/changepassword', 'UserController@changepassword');
 Route::resource('user', 'UserController');
-
-Route::resource('switchportmap', 'SwitchPortMapController');

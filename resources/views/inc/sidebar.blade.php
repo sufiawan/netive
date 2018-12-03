@@ -29,6 +29,7 @@
                 <span class="menu-title">Master User</span>
             </a>
         </li>
+        @endif
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                 <i class="menu-icon mdi mdi-server-network"></i>
@@ -56,14 +57,8 @@
                         <a class="nav-link" href="/server">Server</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/coreswitch">Core Switch</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/manageableswitch">Manageable Switch</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/unmanageableswitch">Unmanageable Switch</a>
-                    </li>
+                        <a class="nav-link" href="/networkswitch">Switch</a>
+                    </li>                    
                 </ul>
             </div>
         </li>
@@ -72,28 +67,33 @@
                 <i class="menu-icon mdi mdi-file-tree"></i>
                 <span class="menu-title">Virtual LAN</span>
             </a>
-        </li>
-        @endif
+        </li>        
         <li class="nav-item">
             <a class="nav-link" href="/enddevice">
                 <i class="menu-icon mdi mdi-laptop-windows"></i>
-                <span class="menu-title">End Device</span>
+                <span class="menu-title">Endpoint Device</span>
             </a>
         </li>          
-        <li class="nav-item">
+<!--        <li class="nav-item">
             <a class="nav-link" href="/switchportmap">
                 <i class="menu-icon mdi mdi-lan"></i>
                 <span class="menu-title">Switch Port Map</span>
             </a>
-        </li>          
+        </li>          -->
         <hr />
         <li class="nav-item">
+            <a class="nav-link" href="/user/{{ Auth::user()->id }}">
+                <i class="menu-icon mdi mdi-key"></i>
+                <span class="menu-title">Change Password</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="#" onclick="event.preventDefault();
-                                    bootbox.confirm('Are you sure want to log out?', function (result) {
-                                        if (result) {
-                                            document.getElementById('logout-form').submit();
-                                        }
-                                    })">
+                    bootbox.confirm('Are you sure want to log out?', function (result) {
+                        if (result) {
+                            document.getElementById('logout-form').submit();
+                        }
+                    })">
                 <i class="menu-icon mdi mdi-logout"></i>
                 <span class="menu-title">Logout</span>
             </a>

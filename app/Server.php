@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Server extends Model
 {
     protected $fillable = [
-        'brand_type', 'bmn_number', 'purchase_year', 'ip_address', 'device_username', 'device_password',
-        'name', 'cpu', 'cpu_core', 'hdd', 'hdd_capacity', 'ram', 'ram_capacity', 'os'
+        'network_device_id', 'name', 'cpu', 'cpu_core', 'hdd', 'hdd_capacity', 'ram', 'ram_capacity', 'os'
     ];
-    
-    public function virtualserver()
-    {
+
+    public function virtualserver() {
         return $this->hasMany(VirtualServer::class);
+    }
+
+    public function network_device() {
+        return $this->hasOne(NetworkDevice::class, 'id', 'network_device_id');
     }
 }

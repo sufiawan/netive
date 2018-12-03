@@ -11,6 +11,7 @@
 
         <link rel="shortcut icon" href="/images/favicon.ico" />    
 
+        <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
         <style type="text/css">
             @font-face {
                 font-family: Nunito;
@@ -21,18 +22,15 @@
         <link href="{{ asset('css/materialdesignicons.min.css') }}" rel="stylesheet">
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">                
     </head>
-    <body>
-        <script src="{{ asset('js/vendor.bundle.base.js') }}" defer></script>
-        <script src="{{ asset('js/vendor.bundle.addons.js') }}" defer></script>
-        
+    <body>        
         <div class="container-scroller">            
-            
+
             @include('inc.navbar')
-            
+
             <div class="container-fluid page-body-wrapper">
-                
+
                 @include('inc.sidebar')
-                                
+
                 <div class="main-panel">
                     <div class="content-wrapper">
                         <main class="py-4">
@@ -50,7 +48,9 @@
                 </div>                
             </div>
         </div>
-                       
+
+        <script src="{{ asset('js/vendor.bundle.base.js') }}" defer></script>
+        <script src="{{ asset('js/vendor.bundle.addons.js') }}" defer></script>               
         <script src="{{ asset('js/off-canvas.js') }}" defer></script>
         <script src="{{ asset('js/misc.js') }}" defer></script>
         <script src="{{ asset('js/bootbox.min.js') }}" defer></script>

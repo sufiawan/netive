@@ -7,7 +7,7 @@
             <li class="breadcrumb-item active" aria-current="page">Access Point</li>
         </ol>
     </nav> -->
-    <div class="pb-2 mb-2"><h2>End Device</h2></div>
+    <div class="pb-2 mb-2"><h2>Endpoint Device</h2></div>
     <div class="card">
         <div class="card-body">
             <div class="card-title">
@@ -17,8 +17,7 @@
                 <table id="tbldata" class="table table-striped table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>IP Address</th>
+                            <th>Name</th>                            
                             <th>Description</th>
                             <th>Action</th>
                         </tr>
@@ -27,8 +26,7 @@
                     <tbody>
                         @foreach($listdata as $data)
                         <tr>
-                            <td>{{ $data->name }}</td>
-                            <td>{{ $data->ip_address }}</td>
+                            <td>{{ $data->name }}</td>                            
                             <td>{{ $data->description }}</td>
                             <td><div><a href="/enddevice/{{ $data->id }}/edit" class="btn btn-sm btn-primary mr-1">Edit</a><button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $data->id }});">Delete</button></div></td>
                         </tr>

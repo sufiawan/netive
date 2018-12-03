@@ -33,7 +33,7 @@
             <hr />
                 @if ($errors->has('nip'))
                     <div class="alert alert-danger" role="alert">{{ $errors->first('nip') }}</div>
-                @endif
+                @endif              
               <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="form-group">

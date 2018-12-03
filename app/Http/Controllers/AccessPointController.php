@@ -4,8 +4,9 @@ namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use NetIve\AccessPoint;
-use Exception;
+use NetIve\NetworkDevice;
 
 class AccessPointController extends Controller
 {
@@ -19,7 +20,7 @@ class AccessPointController extends Controller
         return [
             'brand_type', 'device_username', 'device_password' => 'required',
             'purchase_year' => 'required|numeric|digits:4',
-            'ip_address' => 'nullable|ip'            
+            'ip_address' => 'nullable|ip'
         ];
     }
 
@@ -30,8 +31,10 @@ class AccessPointController extends Controller
      */
     public function index()
     {
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
         $aps = AccessPoint::all();
-        return view('accesspoint.index', ['accesspoints' => $aps]);
+        return view('accesspoint.index', ['listdata' => $aps]);
     }    
 
     /**
@@ -41,7 +44,9 @@ class AccessPointController extends Controller
      */
     public function create()
     {
-        return view('accesspoint.form', ['accesspoint' => new AccessPoint()]);
+        Auth::User()->authorizeRoles(['administrator']);
+        
+        return view('accesspoint.form', ['data' => new AccessPoint(), 'netdev' => new NetworkDevice()]);
     }
 
     /**
@@ -52,14 +57,17 @@ class AccessPointController extends Controller
      */
     public function store(Request $request)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $request->validate($this->rules());
         
         try {
             DB::transaction(function() use ($request) {
-                AccessPoint::create($request->all());
+                $netDev = NetworkDevice::create($request->all() + ['network_device_type_id' => 1]);
+                AccessPoint::create($request->all() + ['network_device_id' => $netDev->id]);
             });
         } catch (Exception $exc) {
-            return redirect()->back()->with('error', 'Access Point create failed!');
+            return redirect()->back()->with('error', 'Access Point create failed! '.$exc->getMessage());
         }
         
         return redirect('/accesspoint')->with('success', 'Access Point created!');                    
@@ -73,8 +81,11 @@ class AccessPointController extends Controller
      */
     public function show($id)
     {
-        $ap = AccessPoint::find($id);
-        return view('accesspoint.form', ['accesspoint' => $ap]);
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
+        $data = AccessPoint::find($id);
+        $netDev = NetworkDevice::find($data->network_device_id);
+        return view('accesspoint.view', ['data' => $data, 'netdev' => $netDev]);
     }
 
     /**
@@ -85,8 +96,11 @@ class AccessPointController extends Controller
      */
     public function edit($id)
     {
-        $ap = AccessPoint::find($id);
-        return view('accesspoint.form', ['accesspoint' => $ap]);
+        Auth::User()->authorizeRoles(['administrator']);
+        
+        $data = AccessPoint::find($id);
+        $netDev = NetworkDevice::find($data->network_device_id);
+        return view('accesspoint.form', ['data' => $data, 'netdev' => $netDev]);
     }
 
     /**
@@ -98,13 +112,19 @@ class AccessPointController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $request->validate($this->rules());
         
         try {
             DB::transaction(function() use ($request, $id) {
                 $ap = AccessPoint::find($id);
                 $data = $request->only($ap->getFillable());
-                $ap->fill($data)->save();                
+                $ap->fill($data)->save();
+                
+                $nd = NetworkDevice::find($ap->network_device_id);
+                $data = $request->only($nd->getFillable());
+                $nd->fill($data)->save();
             });
         } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Access Point update failed!');
@@ -121,9 +141,13 @@ class AccessPointController extends Controller
      */
     public function destroy($id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         try {
             DB::transaction(function() use ($id) {
-                AccessPoint::find($id)->delete();
+                $ap = AccessPoint::find($id);
+                $ap->delete();
+                NetworkDevice::find($ap->network_device_id)->delete();
             });
         } catch (Exception $exc) {
             return redirect('/accesspoint')->with('error', 'Access Point delete failed!');

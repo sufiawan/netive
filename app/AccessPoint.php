@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class AccessPoint extends Model
 {
-    public $primaryKey = 'id';
-
     protected $fillable = [
-        'brand_type', 'bmn_number', 'purchase_year', 'ip_address', 'device_username',
-        'device_password', 'wifi_ssid', 'wifi_password', 'location',
+        'network_device_id', 'wifi_ssid', 'wifi_password', 'location'
     ];
+
+    public function network_device() {
+        return $this->hasOne(NetworkDevice::class, 'id', 'network_device_id');
+    }
 }

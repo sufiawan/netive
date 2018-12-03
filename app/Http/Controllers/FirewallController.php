@@ -4,8 +4,8 @@ namespace NetIve\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use NetIve\Firewall;
-use Exception;
+use Illuminate\Support\Facades\Auth;
+use NetIve\NetworkDevice;
 
 class FirewallController extends Controller
 {
@@ -30,7 +30,9 @@ class FirewallController extends Controller
      */
     public function index()
     {
-        $list = Firewall::all();
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
+        $list = NetworkDevice::where('network_device_type_id', 3)->get();
         return view('firewall.index', ['listdata' => $list]);
     }
 
@@ -41,7 +43,9 @@ class FirewallController extends Controller
      */
     public function create()
     {
-        return view('firewall.form', ['data' => new Firewall()]);
+        Auth::User()->authorizeRoles(['administrator']);
+        
+        return view('firewall.form', ['netdev' => new NetworkDevice()]);
     }
 
     /**
@@ -52,11 +56,13 @@ class FirewallController extends Controller
      */
     public function store(Request $request)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $request->validate($this->rules());
         
         try {
             DB::transaction(function() use ($request) {
-                Firewall::create($request->all());
+                NetworkDevice::create($request->all() + ['network_device_type_id' => 3]);
             });
         } catch (Exception $exc) {
             return redirect()->back()->with('error', 'Firewall create failed!');
@@ -73,8 +79,10 @@ class FirewallController extends Controller
      */
     public function show($id)
     {
-        $data = Firewall::find($id);
-        return view('firewall.form', ['data' => $data]);
+        Auth::User()->authorizeRoles(['administrator', 'engineer']);
+        
+        $netdev = NetworkDevice::find($id);
+        return view('firewall.view', ['netdev' => $netdev]);
     }
 
     /**
@@ -85,8 +93,10 @@ class FirewallController extends Controller
      */
     public function edit($id)
     {
-        $data = Firewall::find($id);
-        return view('firewall.form', ['data' => $data]);
+        Auth::User()->authorizeRoles(['administrator']);
+        
+        $netdev = NetworkDevice::find($id);
+        return view('firewall.form', ['netdev' => $netdev]);
     }
 
     /**
@@ -98,11 +108,13 @@ class FirewallController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         $request->validate($this->rules());
         
         try {
             DB::transaction(function() use ($request, $id) {
-                $data = Firewall::find($id);
+                $data = NetworkDevice::find($id);
                 $updateddata = $request->only($data->getFillable());
                 $data->fill($updateddata)->save();
             });
@@ -121,9 +133,11 @@ class FirewallController extends Controller
      */
     public function destroy($id)
     {
+        Auth::User()->authorizeRoles(['administrator']);
+        
         try {
             DB::transaction(function() use ($id) {
-                Firewall::find($id)->delete();
+                NetworkDevice::find($id)->delete();
             });
         } catch (Exception $exc) {
             return redirect('/firewall')->with('error', 'Firewall delete failed!');
